@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIの思考法を進化させるCoTプロンプティング技術</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-black text-[#005f73] mb-2">AIの思考法を進化させる技術</h1>
+            <p class="text-lg md:text-xl text-[#0a9396]">Chain-of-Thoughtプロンプティングの進化と展望</p>
+        </header>
+
+        <main class="space-y-12">
+            
+            <section class="text-center bg-white p-8 rounded-lg shadow-lg">
+                <p class="text-2xl font-bold text-[#ca6702]">はじめに</p>
+                <p class="text-gray-600 mt-2 max-w-3xl mx-auto">
+                    Chain-of-Thought（CoT）プロンプティングは、大規模言語モデル（LLM）に複雑な問題の解決プロセスを「ステップ・バイ・ステップ」で考えさせることで、その推論能力を飛躍的に向上させる技術です。ここでは、その基本概念から最新の応用技術までを概観します。
+                </p>
+            </section>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#005f73] mb-4">① 思考の連鎖: Chain-of-Thought (CoT)</h3>
+                    <div class="flex-grow">
+                        <p class="mb-4 text-gray-700">
+                            LLMに最終的な答えだけでなく、そこに至るまでの中間的な推論ステップを生成させる手法です。これにより、算術、常識、記号的推論など、複数のステップを要するタスクのパフォーマンスが大幅に向上します。
+                        </p>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <p class="font-semibold text-gray-800">代表的な論文:</p>
+                            <p class="text-sm text-gray-600">Wei, J., et al. (2022). "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models."</p>
+                        </div>
+                        <div class="mt-6">
+                             <p class="font-bold text-center mb-2 text-[#0a9396]">Standard Prompt vs. CoT Prompt</p>
+                             <div class="flex justify-around items-start">
+                                 <div class="w-2/5 text-center">
+                                     <p class="font-semibold">Standard</p>
+                                     <div class="p-2 border-2 border-red-300 rounded-lg bg-red-50 text-sm">問題 →</div>
+                                     <div class="text-2xl my-2 text-red-400">↓</div>
+                                     <div class="p-2 border-2 border-red-300 rounded-lg bg-red-50 text-sm">答え</div>
+                                 </div>
+                                 <div class="w-2/5 text-center">
+                                     <p class="font-semibold">Chain-of-Thought</p>
+                                     <div class="p-2 border-2 border-green-300 rounded-lg bg-green-50 text-sm">問題 →</div>
+                                     <div class="text-2xl my-2 text-green-500">↓</div>
+                                     <div class="p-2 border-2 border-green-300 rounded-lg bg-green-50 text-sm">思考ステップ1</div>
+                                     <div class="text-2xl my-2 text-green-500">↓</div>
+                                     <div class="p-2 border-2 border-green-300 rounded-lg bg-green-50 text-sm">思考ステップ2</div>
+                                      <div class="text-2xl my-2 text-green-500">↓</div>
+                                     <div class="p-2 border-2 border-green-300 rounded-lg bg-green-50 text-sm">答え</div>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#005f73] mb-4">② 解法の多数決: Self-Consistency</h3>
+                     <div class="flex-grow">
+                        <p class="mb-4 text-gray-700">
+                            単一の推論パスに頼るのではなく、複数の異なる思考の連鎖（CoT）を生成させ、それらの結果の中から最も一貫性のある（多数派の）答えを選択する手法です。CoTの頑健性をさらに高めます。
+                        </p>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <p class="font-semibold text-gray-800">代表的な論文:</p>
+                            <p class="text-sm text-gray-600">Wang, X., et al. (2022). "Self-Consistency Improves Chain of Thought Reasoning in Language Models."</p>
+                        </div>
+                        <div class="mt-6">
+                            <p class="font-bold text-center mb-2 text-[#0a9396]">Self-Consistencyのプロセス</p>
+                            <div class="relative p-4">
+                                <div class="text-center p-2 border-2 border-gray-400 rounded-lg bg-gray-50 text-sm w-1/2 mx-auto">問題</div>
+                                <div class="flex justify-center mt-8 space-x-2">
+                                    <div class="w-1/3">
+                                        <div class="h-8 border-l-2 border-b-2 border-blue-400 -mt-8 ml-1/2"></div>
+                                        <div class="p-2 border-2 border-blue-300 rounded-lg bg-blue-50 text-xs text-center">パス1 → A</div>
+                                    </div>
+                                    <div class="w-1/3">
+                                        <div class="h-4 border-l-2 border-gray-400 -mt-4 ml-1/2"></div>
+                                         <div class="p-2 border-2 border-blue-300 rounded-lg bg-blue-50 text-xs text-center">パス2 → B</div>
+                                    </div>
+                                    <div class="w-1/3">
+                                        <div class="h-8 border-r-2 border-b-2 border-blue-400 -mt-8 mr-1/2"></div>
+                                         <div class="p-2 border-2 border-blue-300 rounded-lg bg-blue-50 text-xs text-center">パス3 → A</div>
+                                    </div>
+                                </div>
+                                <div class="mt-8 flex justify-center">
+                                    <div class="p-4 bg-[#ee9b00] text-white rounded-full shadow-lg">
+                                        <p class="font-bold">最終回答: A (多数決)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="bg-white p-8 rounded-lg shadow-lg md:col-span-2">
+                <h2 class="text-3xl font-bold text-center text-[#bb3e03] mb-6">思考の構造化: 線形から非線形へ</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">
+                    初期のCoTは直線的な思考プロセスでしたが、より複雑な問題に対応するため、思考を分岐・統合する非線形なアプローチが登場しました。これにより、探索的な問題解決や、複数の可能性を同時に検討する能力が向上しました。
+                </p>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-4">複雑な数学問題（Game of 24）における正解率の比較（模式図）</p>
+            </section>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#005f73] mb-4">③ 思考の分岐: Tree of Thoughts (ToT)</h3>
+                    <div class="flex-grow">
+                        <p class="mb-4 text-gray-700">
+                            問題を解決する過程で、複数の異なる思考ステップ（可能性）を生成し、それらを木の枝のように分岐させて探索します。各ステップで有望な思考パスを評価し、探索を続けるか、枝刈り（backtrack）するかを決定します。
+                        </p>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <p class="font-semibold text-gray-800">代表的な論文:</p>
+                            <p class="text-sm text-gray-600">Yao, S., et al. (2023). "Tree of Thoughts: Deliberate Problem Solving with Large Language Models."</p>
+                        </div>
+                         <div class="mt-6 text-center">
+                             <div class="p-2 bg-gray-200 rounded-lg inline-block">初期ノード</div>
+                             <div class="flex justify-center my-2">
+                                 <div class="w-px bg-gray-400 h-6"></div>
+                             </div>
+                             <div class="h-px bg-gray-400 w-2/3 mx-auto"></div>
+                             <div class="flex justify-around">
+                                 <div class="w-px bg-gray-400 h-6"></div>
+                                 <div class="w-px bg-gray-400 h-6"></div>
+                                 <div class="w-px bg-gray-400 h-6"></div>
+                             </div>
+                             <div class="flex justify-around">
+                                <div class="p-2 bg-teal-100 rounded-lg">枝1</div>
+                                <div class="p-2 bg-teal-100 rounded-lg">枝2</div>
+                                <div class="p-2 bg-red-100 rounded-lg">枝3 (破棄)</div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#005f73] mb-4">④ 思考の統合: Graph of Thoughts (GoT)</h3>
+                    <div class="flex-grow">
+                        <p class="mb-4 text-gray-700">
+                            ToTをさらに一般化し、思考プロセスをグラフ構造としてモデル化します。これにより、思考の分岐だけでなく、異なる思考パスを統合（merge）して新しいパスを生成できます。より柔軟で強力な推論フレームワークです。
+                        </p>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <p class="font-semibold text-gray-800">代表的な論文:</p>
+                            <p class="text-sm text-gray-600">Besta, M., et al. (2023). "Graph of Thoughts: Solving Complex Problems with Graph-based Reasoning."</p>
+                        </div>
+                         <div class="mt-6 text-center relative h-32">
+                             <div class="absolute top-0 left-1/4 p-2 bg-teal-100 rounded-lg">枝A</div>
+                             <div class="absolute top-0 right-1/4 p-2 bg-teal-100 rounded-lg">枝B</div>
+                             <div class="absolute bottom-0 left-1/2 -translate-x-1/2 p-2 bg-orange-200 rounded-lg font-bold">統合ノード</div>
+                             <div class="absolute top-10 left-1/3 w-1/3 h-px bg-gray-400"></div>
+                             <div class="absolute top-10 left-1/3 w-px h-12 bg-gray-400 rotate-45"></div>
+                             <div class="absolute top-10 right-1/3 w-px h-12 bg-gray-400 -rotate-45"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold text-center text-[#9b2226] mb-6">今後の展望: 自動化と自己修正</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold text-[#ae2012] mb-2">プロンプトの自動生成</h4>
+                        <p class="text-gray-700">
+                            人間が手動でCoTプロンプトを作成するのではなく、LLM自身に問題例から効果的なプロンプトを自動生成させる研究が進んでいます (e.g., "Automatic Chain of Thought Prompting")。これにより、CoTの適用が容易になります。
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-[#ae2012] mb-2">メタ認知と自己修正</h4>
+                        <p class="text-gray-700">
+                            生成した思考プロセスをモデル自身が評価し、誤りがあれば自ら修正していく「自己修正」の能力が今後の重要な研究テーマです。これにより、より信頼性の高い推論が可能になると期待されています。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t">
+            <p class="text-gray-500">本インフォグラフィックは公開されている学術論文に基づき作成されました。</p>
+        </footer>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+
+        const processLabel = (label) => {
+            if (label.length > 16) {
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + word).length > 16) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                lines.push(currentLine.trim());
+                return lines;
+            }
+            return label;
+        };
+        
+        const labels = ['Standard IO', 'Chain-of-Thought (CoT)', 'CoT + Self-Consistency', 'Tree of Thoughts (ToT)'].map(processLabel);
+        
+        const performanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '正解率 (%)',
+                    data: [12, 45, 75, 92],
+                    backgroundColor: [
+                        'rgba(148, 210, 189, 0.6)',
+                        'rgba(10, 147, 150, 0.6)',
+                        'rgba(0, 95, 115, 0.6)',
+                        'rgba(202, 103, 2, 0.6)'
+                    ],
+                    borderColor: [
+                        '#94d2bd',
+                        '#0a9396',
+                        '#005f73',
+                        '#ca6702'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#333'
+                        },
+                        grid: {
+                            color: '#eee'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#333'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'プロンプティング手法によるパフォーマンス比較',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        color: '#005f73',
+                        padding: {
+                            bottom: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
